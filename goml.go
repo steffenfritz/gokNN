@@ -20,15 +20,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 package goml
 
-import "math"
+import (
+	"errors"
+	"math"
+)
 
+// a basic type with a lable and a feature slice
 type LabelWithFeatures struct {
 	Label   string
-	Feature float64
+	Feature []float64
 }
 
+// give the distance functions a common name
+type Distance func([]float64, []float64) float64
+
 // calculates Euclidian distance
-func euclidian(inX []float64, setX []float64) float64 {
+func Euclidian(inX []float64, setX []float64) (float64, error) {
+	if len(inX) != len(setX) {
+		err := errors.New("Input slices are not of same length")
+		return 0.0, err
+	}
 	var dist float64
 
 	for i, valElement := range inX {
@@ -36,17 +47,18 @@ func euclidian(inX []float64, setX []float64) float64 {
 		dist = dist + temp
 	}
 
-	return math.Sqrt(dist)
+	return math.Sqrt(dist), nil
 }
 
 // calculates Manhattan distance
-func manhatten(inX []float64, dataSet []float64) float64 {
+func Manhatten(inX []float64, dataSet []float64) (float64, error) {
 	var dist float64
 
-	return dist
+	return dist, nil
 }
 
 // calculates k-Nearest Neighbors, returns label
-func KNN(k int, toClassify float64, tData []LabelWithFeatures) string {
+func KNN(k int, toClassify float64, tData []LabelWithFeatures, distf Distance) string {
+	nLabel := "test"
 	return nLabel
 }
