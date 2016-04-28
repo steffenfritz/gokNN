@@ -1,5 +1,4 @@
 /*
-
 a machine learning library
 
 Copyright (C) 2016  Steffen Fritz
@@ -23,21 +22,38 @@ package goml
 import (
 	"errors"
 	"math"
+	"sort"
 )
 
-// a basic type with a lable and a feature slice
+// a basic type with a label and a feature slice
 type LabelWithFeatures struct {
 	Label   string
 	Feature []float64
 }
 
+// a slice of LabelWithFeatures for the Sort methods
+type SLabelWithFeatures []LabelWithFeatures
+
 // give the distance functions a common name
-type Distance func([]float64, []float64) float64
+type Distance func([]float64, []float64) (float64, error)
+
+// implements the sort.Sort interface for LabelWithFeatures
+func (slice SLabelWithFeatures) Len() int {
+	return len(slice)
+}
+
+func (slice SLabelWithFeatures) Less(i, j int) bool {
+	return slice[i].Feature[0] < slice[j].Feature[0]
+}
+
+func (slice SLabelWithFeatures) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
+}
 
 // calculates Euclidian distance
 func Euclidian(inX []float64, setX []float64) (float64, error) {
 	if len(inX) != len(setX) {
-		err := errors.New("Input slices are not of same length")
+		err := errors.New("Input slices are not of same length.\n")
 		return 0.0, err
 	}
 	var dist float64
@@ -57,8 +73,27 @@ func Manhatten(inX []float64, dataSet []float64) (float64, error) {
 	return dist, nil
 }
 
-// calculates k-Nearest Neighbors, returns label
-func KNN(k int, toClassify float64, tData []LabelWithFeatures, distf Distance) string {
-	nLabel := "test"
-	return nLabel
+// calculates k-Nearest Neighbors, returns k nearest LabelWithFeatures
+func KNN(k int, toClassify []float64, tData []LabelWithFeatures, distf Distance) ([]LabelWithFeatures, error) {
+	var tempE LabelWithFeatures
+	var unsortedSlice SLabelWithFeatures
+	var sortedSlice []LabelWithFeatures
+
+	for _, tEntry := range tData {
+		dist, err := distf(toClassify, tEntry.Feature)
+		tempE.Feature = []float64{dist}
+		tempE.Label = tEntry.Label
+		unsortedSlice = append(unsortedSlice, tempE)
+
+		if err != nil {
+			return unsortedSlice, err
+		}
+		sort.Sort(unsortedSlice)
+	}
+
+	for i := 0; i < k; i++ {
+		sortedSlice = append(sortedSlice, unsortedSlice[i])
+	}
+
+	return sortedSlice, nil
 }
