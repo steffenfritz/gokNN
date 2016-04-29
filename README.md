@@ -9,6 +9,7 @@ A machine learning library for Go.
 ### Distance functions
 1. Euclidian
 2. Manhatten
+
 ### ToDo
 1. Add a normalization function
 2. Testing
