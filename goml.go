@@ -1,6 +1,4 @@
 /*
-a machine learning library
-
 Copyright (C) 2016  Steffen Fritz
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +15,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+//a machine learning library
 package goml
 
 import (
@@ -31,13 +30,13 @@ type LabelWithFeatures struct {
 	Feature []float64
 }
 
-// a slice of LabelWithFeatures for the Sort methods
+// a slice of type LabelWithFeatures for the Sort methods
 type SLabelWithFeatures []LabelWithFeatures
 
 // give the distance functions a common name
 type Distance func([]float64, []float64) (float64, error)
 
-// implements the sort.Sort interface for LabelWithFeatures
+// implements the sort.Sort interface for type LabelWithFeatures
 func (slice SLabelWithFeatures) Len() int {
 	return len(slice)
 }
@@ -67,8 +66,17 @@ func Euclidian(inX []float64, setX []float64) (float64, error) {
 }
 
 // calculates Manhattan distance
-func Manhatten(inX []float64, dataSet []float64) (float64, error) {
+func Manhatten(inX []float64, setX []float64) (float64, error) {
+	if len(inX) != len(setX) {
+		err := errors.New("Input slices are not of same length.\n")
+		return 0.0, err
+	}
 	var dist float64
+
+	for i, valElement := range inX {
+		temp := math.Abs(valElement - setX[i])
+		dist = dist + temp
+	}
 
 	return dist, nil
 }
@@ -78,6 +86,11 @@ func KNN(k int, toClassify []float64, tData []LabelWithFeatures, distf Distance)
 	var tempE LabelWithFeatures
 	var unsortedSlice SLabelWithFeatures
 	var sortedSlice []LabelWithFeatures
+
+	if k > len(tData) {
+		err := errors.New("k larger than training data.\n")
+		return sortedSlice, err
+	}
 
 	for _, tEntry := range tData {
 		dist, err := distf(toClassify, tEntry.Feature)
