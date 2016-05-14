@@ -1,24 +1,12 @@
 ![Build Status](https://travis-ci.org/steffenfritz/goml.svg?branch=master)
 
-# goml
-A machine learning library for Go.
+# gokNN
+k-Nearest-Neighbour written in Go
 
-
-# Classification
-## kNN
-### Distance functions
+## Used Distance functions
 1. Euclidian
 2. Manhatten
 
-### ToDo
-1. Add a normalization function
-2. Testing
+## Input data
 
-## Decision tree
-ToDo
-
-## Logistic regression
-ToDo
-
-## Naive Bayes
-ToDo
+## Usage
